@@ -48,9 +48,6 @@ int main()
         {
             gameObject.draw(canvas);
         }
-
-        // Временный код до следующей главы
-        window.draw(canvas, factory.m_Texture);
         // Показываем новый кадр
         window.display();
     }
