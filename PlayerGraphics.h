@@ -2,14 +2,14 @@
 #include "Graphics.h"
 #include <memory>
 
-// class Animator
+class Animator;
 class PlayerUpdate;
 class PlayerGraphics : public Graphics
 {
     private:
         FloatRect* m_Position = nullptr;
         int m_VertexStartIndex = -999;
-        // Animator* m_Animator;
+        Animator* m_Animator;
         IntRect* m_SectionToDraw = new IntRect;
         IntRect* m_StandingStillSectionToDraw = new IntRect;
         std::shared_ptr<PlayerUpdate> m_PlayerUpdate;
