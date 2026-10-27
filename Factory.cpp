@@ -9,7 +9,9 @@
 #include "CameraGraphics.h"
 #include "PlatformGraphics.h"
 #include "PlatformUpdate.h"
-
+#include "MenuUpdate.h"
+#include "MenuGraphics.h"
+#include "RainGraphics.h"
 
 Factory::Factory(RenderWindow* window)
 {
@@ -71,6 +73,24 @@ void Factory::loadLevel(
         );
     }
 
+    // Дождь
+    int rainCoveragePerObject = 25;
+    int areaToCover = 350;
+    for (int h = -areaToCover / 2; h < areaToCover / 2; h+= rainCoveragePerObject)
+    {
+        for (int v = -areaToCover / 2; v < areaToCover / 2; v += rainCoveragePerObject)
+        {
+            GameObject rain;
+            shared_ptr<RainGraphics> rainGraphics = make_shared<RainGraphics>(playerUpdate->getPositionPointer(), h, v, rainCoveragePerObject);
+            rainGraphics->assemble(
+                canvas, nullptr,
+                IntRect(RAIN_TEX_LEFT, RAIN_TEX_TOP,
+                RAIN_TEX_WIDTH, RAIN_TEX_HEIGHT));
+            rain.addComponent(rainGraphics);
+            gameObjects.push_back(rain);
+        }
+    }// Конец кода дождя
+
     // Для обеих камер
     const float width = float(VideoMode::getDesktopMode().width);
     const float height = float(VideoMode::getDesktopMode().height);
@@ -121,4 +141,21 @@ void Factory::loadLevel(
 
     mapCamera.addComponent(mapCameraGraphics);
     gameObjects.push_back(mapCamera);
+
+    // Меню
+    GameObject menu;
+    shared_ptr<MenuUpdate> menuUpdate = make_shared<MenuUpdate>(m_Window);
+    menuUpdate->assemble(levelUpdate, playerUpdate);
+
+    inputDispatcher.registerNewInputReceiver(menuUpdate->getInputReceiver());
+
+    menu.addComponent(menuUpdate);
+
+    shared_ptr<MenuGraphics>menuGraphics = make_shared<MenuGraphics>();
+    menuGraphics->assemble(canvas, menuUpdate,
+        IntRect(TOP_MENU_TEX_LEFT, TOP_MENU_TEX_TOP,
+        TOP_MENU_TEX_WIDTH, TOP_MENU_TEX_HEIGHT));
+    
+    menu.addComponent(menuGraphics);
+    gameObjects.push_back(menu);
 }
