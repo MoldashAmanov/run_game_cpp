@@ -8,6 +8,8 @@ SoundBuffer SoundEngine::m_ClickBuffer;
 Sound SoundEngine::m_ClickSound;
 SoundBuffer SoundEngine::m_JumpBuffer;
 Sound SoundEngine::m_JumpSound;
+SoundBuffer SoundEngine::m_FireballLaunchBuffer;
+Sound SoundEngine::m_FireballLaunchSound;
 SoundEngine::SoundEngine()
 {
     assert(m_s_Instance == nullptr);
@@ -16,6 +18,13 @@ SoundEngine::SoundEngine()
     m_ClickSound.setBuffer(m_ClickBuffer);
     m_JumpBuffer.loadFromFile("sounds/jump.wav");
     m_JumpSound.setBuffer(m_JumpBuffer);
+
+    Listener::setDirection(1.f, 0.f, 0.f);
+    Listener::setUpVector(1.f, 1.f, 0.f);
+    Listener::setGlobalVolume(100.f);
+
+    m_FireballLaunchBuffer.loadFromFile("sounds/fireballLaunch.wav");
+    m_FireballLaunchSound.setBuffer(m_FireballLaunchBuffer);
 }
 void SoundEngine::playClick()
 {
@@ -46,4 +55,27 @@ void SoundEngine::stopMusic()
 {
     m_s_Instance->music.stop();
     mMusicIsPlaying = false;
+}
+void SoundEngine::playFireballLaunch(
+    Vector2f playerPosition,
+    Vector2f soundLocation)
+{
+    m_FireballLaunchSound.setRelativeToListener(true);
+
+    if (playerPosition.x > soundLocation.x)
+    // Звук слева
+    {
+        Listener::setPosition(0, 0, 0.f);
+        m_FireballLaunchSound.setPosition(-100, 0, 0.f);
+        m_FireballLaunchSound.setMinDistance(100);
+        m_FireballLaunchSound.setAttenuation(0);
+    }
+    else // Звук справа
+    {
+        Listener::setPosition(0, 0, 0.f);
+        m_FireballLaunchSound.setPosition(100, 0, 0.f);
+        m_FireballLaunchSound.setMinDistance(100);
+        m_FireballLaunchSound.setAttenuation(0);
+    }
+    m_FireballLaunchSound.play();
 }
